@@ -4,7 +4,7 @@ import re
 from bs4 import BeautifulSoup
 
 app = Flask(__name__)
-app.config["DEBUG"] = True
+# app.config["DEBUG"] = True
 
 
 # Create some test data for our catalog in the form of a list of dictionaries.
