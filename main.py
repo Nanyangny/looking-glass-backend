@@ -124,3 +124,6 @@ def get_past_conv(soup_input):
         past_convs.append(conv_dic)
     return past_convs
 
+if __name__ == '__main__':
+    # Threaded option to enable multiple instances for multiple user access support
+    app.run(threaded=True, port=5000)
