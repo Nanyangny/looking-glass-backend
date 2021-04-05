@@ -33,21 +33,21 @@ def hello():
     return 'Hello, World!'
 
 
-@app.route('/books',methods=['GET'])
-def api_id():
-    if 'id' in request.args:
-        id = int(request.args['id'])
-        res = requests.get("https://theconversation.com/eksploitasi-pekerja-magang-di-start-up-bisa-terjadi-karena-aturan-hukum-yang-ketinggalan-zaman-157353").text
-        print(res)
+# @app.route('/books',methods=['GET'])
+# def api_id():
+#     if 'id' in request.args:
+#         id = int(request.args['id'])
+#         res = requests.get("https://theconversation.com/eksploitasi-pekerja-magang-di-start-up-bisa-terjadi-karena-aturan-hukum-yang-ketinggalan-zaman-157353").text
+#         print(res)
         
-    else:
-        return "Error: No id field provided. Please specify an id."
+#     else:
+#         return "Error: No id field provided. Please specify an id."
 
-    results = []
-    for book in books:
-        if book['id']==id:
-            results.append(book)
-    return jsonify(results)
+#     results = []
+#     for book in books:
+#         if book['id']==id:
+#             results.append(book)
+#     return jsonify(results)
 
 @app.route('/news',methods=['GET'])
 def api_news():
@@ -82,6 +82,29 @@ def api_news():
         
     else:
         return "Error: No id field provided. Please specify an id."
+
+
+## for topic quick review
+@app.route('/basics',methods=['GET'])
+def api_basics():
+    result ={}
+    if 'url' in request.args:
+        url = request.args['url']
+        news_domain = re.search('https://\w+.com/',url)[0]
+        res = requests.get(url).text
+        soup = BeautifulSoup(res, 'html.parser')
+        basic_info = get_og_info(soup)
+        result['og'] = basic_info
+        response = jsonify(result)
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response
+    else:
+        return "Error: No id field provided. Please specify an id."
+
+
+
+
+
 
 @app.route('/videos',methods=['GET'])
 def api_youtube():
