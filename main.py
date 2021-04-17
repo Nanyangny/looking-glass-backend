@@ -55,6 +55,7 @@ def api_news():
     result ={}
     if 'url' in request.args:
         url = request.args['url']
+        print(url)
         if url.startswith('https://theconversation.com/'):
             news_domain = re.search('https://\w+.com/',url)[0]
             res = requests.get(url).text
@@ -78,6 +79,8 @@ def api_news():
             basic_info = get_og_info(soup)
             result['og'] = basic_info
             result['pub_time'] = get_pub_time(soup)
+            result['past_conv']=[]
+            print(result)
 
     if 'keyword' in request.args:
         ### keyword search
@@ -90,6 +93,7 @@ def api_news():
         return response
         
     else:
+
         return "Error: No id field provided. Please specify an id."
 
 
@@ -99,7 +103,7 @@ def api_basics():
     result ={}
     if 'url' in request.args:
         url = request.args['url']
-        res = requests.get(url).text
+        res = urllib.request.urlopen(url).read().decode("utf8")
         soup = BeautifulSoup(res, 'html.parser')
         basic_info = get_og_info(soup)
         result['og'] = basic_info
