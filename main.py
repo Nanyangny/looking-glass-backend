@@ -4,6 +4,7 @@ import re
 from bs4 import BeautifulSoup
 import urllib
 
+
 app = Flask(__name__)
 app.config["DEBUG"] = True
 
@@ -55,20 +56,28 @@ def api_news():
     if 'url' in request.args:
         url = request.args['url']
         news_domain = re.search('https://\w+.com/',url)[0]
-        res = requests.get(url).text
-        soup = BeautifulSoup(res, 'html.parser')
-        basic_info = get_og_info(soup)
-        ## for Conversation
-        authors = get_author_info(soup,news_domain)
-        past_convs = get_past_conv(soup)
-        try:
-            published_time = soup.select("#article > figure > div.magazine-title > div > header > time")[0]['datetime']
-        except:
-            published_time = soup.select("#article > div:nth-child(1) > div > header > time")[0]['datetime']
-        result['past_conv']=past_convs
-        result['og'] = basic_info
-        result['authors']= authors
-        result['pub_time']=published_time
+        if news_domain.startswith('https://theconversation.com/'):
+            res = requests.get(url).text
+            soup = BeautifulSoup(res, 'html.parser')
+            basic_info = get_og_info(soup)
+            ## for Conversation
+            authors = get_author_info(soup,news_domain)
+            past_convs = get_past_conv(soup)
+            try:
+                published_time = soup.select("#article > figure > div.magazine-title > div > header > time")[0]['datetime']
+            except:
+                published_time = soup.select("#article > div:nth-child(1) > div > header > time")[0]['datetime']
+            result['past_conv']=past_convs
+            result['og'] = basic_info
+            result['authors']= authors
+            result['pub_time']=published_time
+
+        else:
+            res = urllib.request.urlopen(url).read().decode("utf8")
+            soup = BeautifulSoup(res, 'html.parser')
+            basic_info = get_og_info(soup)
+            result['og'] = basic_info
+            result['pub_time'] = get_pub_time(soup)
 
     if 'keyword' in request.args:
         ### keyword search
@@ -90,7 +99,6 @@ def api_basics():
     result ={}
     if 'url' in request.args:
         url = request.args['url']
-        news_domain = re.search('https://\w+.com/',url)[0]
         res = requests.get(url).text
         soup = BeautifulSoup(res, 'html.parser')
         basic_info = get_og_info(soup)
@@ -149,7 +157,11 @@ def get_author_info(soup_input,domain):
 
 
 
-
+def get_pub_time(soup_input):
+    for item in soup_input.find_all('time'):
+        if item['datetime']:
+            return item['datetime']
+    return ""
 
 
 def get_past_conv(soup_input):
