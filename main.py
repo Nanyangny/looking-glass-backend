@@ -213,7 +213,10 @@ def get_youtube_video(keyword):
                         decoded_url = urllib.parse.unquote(extracted_vid_url)
                         decoded_url = "https://www.youtube.com/embed/"+decoded_url.split('https://www.youtube.com/watch?v=')[1]
                         youtube['url']=decoded_url
-                        youtube['desc']=item.find_all('h3')[0].text.split(' | ')[0]
+                        if '|' in item.find_all('h3')[0].text:
+                            youtube['desc']=item.find_all('h3')[0].text.split(' | ')[0]
+                        else:
+                            youtube['desc']=item.find_all('h3')[0].text.split(' - YouTube')[0]
                         youtubes.append(youtube)
                         if len(youtubes)==3:
                             return youtubes
