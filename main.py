@@ -55,8 +55,8 @@ def api_news():
     result ={}
     if 'url' in request.args:
         url = request.args['url']
-        news_domain = re.search('https://\w+.com/',url)[0]
-        if news_domain.startswith('https://theconversation.com/'):
+        if url.startswith('https://theconversation.com/'):
+            news_domain = re.search('https://\w+.com/',url)[0]
             res = requests.get(url).text
             soup = BeautifulSoup(res, 'html.parser')
             basic_info = get_og_info(soup)
@@ -103,6 +103,7 @@ def api_basics():
         soup = BeautifulSoup(res, 'html.parser')
         basic_info = get_og_info(soup)
         result['og'] = basic_info
+        result['pub_time'] = get_pub_time(soup)
         response = jsonify(result)
         response.headers.add("Access-Control-Allow-Origin", "*")
         return response
