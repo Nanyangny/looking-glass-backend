@@ -219,6 +219,7 @@ def get_youtube_video(keyword):
                             youtube['desc']=item.find_all('h3')[0].text.split(' - YouTube')[0]
                         youtubes.append(youtube)
                         if len(youtubes)==3:
+                            print(youtubes)
                             return youtubes
                     except:
                         pass
